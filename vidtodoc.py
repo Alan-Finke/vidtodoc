@@ -33,26 +33,13 @@ def extract_frame_at_time(video_path, output_dir, time_in_seconds):
     vidcap.release()
 
 
-""" async def getClientListAsync():
-    BASE_URL = "https://aips-ai-gateway.ue1.dev.ai-platform.int.wexfabric.com/"
-
-    client = await AsyncOpenAI(
-        base_url=BASE_URL,api_key=apikey,
-        # This http_client with verify=False is used to avoid SSL errors during local development. Remove this in production environments.
-        http_client=DefaultAsyncHttpxClient(
-            verify=False
-        )
-    )
-    res =  client.models.list()
-    print(res.model_dump_json(indent=4)) """
-
     
 ### Initialize OpenAI client
 dir = os.getcwd();
-#print("It's ", cd);
 
 apikey = os.getenv('OPEN_API_KEY')
 #print(f"Value of MY_ENV_VAR: {apikey}")
+
 BASE_URL = "https://aips-ai-gateway.ue1.dev.ai-platform.int.wexfabric.com/"
 
 client = OpenAI(
