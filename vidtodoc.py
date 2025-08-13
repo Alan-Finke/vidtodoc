@@ -2,9 +2,14 @@ import whisper
 import ssl
 import os
 import cv2 
+import argparse
 from docx import Document 
 from docx.shared import Inches
 from openai import AsyncOpenAI, DefaultAsyncHttpxClient , OpenAI 
+
+# Github: 
+# https://github.com/Alan-Finke/vidtodoc
+
 
 def extract_frame_at_time(video_path, output_dir, time_in_seconds):
     """
@@ -32,6 +37,16 @@ def extract_frame_at_time(video_path, output_dir, time_in_seconds):
 
     vidcap.release()
 
+### Get the commandline arguments
+'''
+parser = argparse.ArgumentParser(description="Convert a video to a document")
+parser.add_argument("--in", type=str, help="Input file path for video")
+parser.add_argument("--out", type=int, help="Output file path for document")
+
+args = parser.parse_args()
+
+exit(0);
+'''
 
     
 ### Initialize OpenAI client
