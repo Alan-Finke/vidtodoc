@@ -1,12 +1,15 @@
-import whisper
-import ssl
-import os
+import argparse
 import cv2 
+import gdown
+import httpx
+import os
+import ssl
+import whisper
 from docx import Document 
 from docx.shared import Inches
 from openai import AsyncOpenAI, DefaultAsyncHttpxClient , OpenAI 
 
-def extract_frame_at_time(video_path, output_dir, time_in_seconds):
+def extract_frame_at_time(video_path, output_dir, time_in_seconds, verbose):
     """
     Extracts a frame from a video at a specific timestamp.
 
@@ -26,7 +29,8 @@ def extract_frame_at_time(video_path, output_dir, time_in_seconds):
         #filename = f"{output_dir}/frame_at_{time_in_seconds}s.jpg"
         filename = f"{output_dir}/frame.jpg"
         cv2.imwrite(filename, image)
-        print(f"Frame extracted and saved to: {filename}")
+        if verbose:
+            print(f"Frame extracted and saved to: {filename}")
     else:
         print(f"Could not extract frame at {time_in_seconds} seconds.")
 
@@ -38,12 +42,15 @@ def extract_frame_at_time(video_path, output_dir, time_in_seconds):
 dir = os.getcwd();
 
 apikey = os.getenv('OPEN_API_KEY')
-#print(f"Value of MY_ENV_VAR: {apikey}")
+### Debug
+#print(f"Value of OPEN_API_KEY: {apikey}")
 
 BASE_URL = "https://aips-ai-gateway.ue1.dev.ai-platform.int.wexfabric.com/"
 
 client = OpenAI(
-    base_url=BASE_URL,api_key=apikey
+    base_url=BASE_URL,
+    api_key=apikey,
+    http_client = httpx.Client(verify=False)
 )
 
 """ response =  client.chat.completions.create(model='azure-gpt-4o', messages = [
@@ -65,19 +72,42 @@ print(response.choices[0].message.content); """
 apikey = os.getenv('OPEN_API_KEY')
 #print(f"Value of MY_ENV_VAR: {apikey}") """
 
-file_path = "ReclaimDemo.mp4";
+### Get --infile and --outfile arguments from command line
+parser = argparse.ArgumentParser();
+parser.add_argument('--infile', type=str, required=True, help='Path to the input video file');
+parser.add_argument('--outfile', type=str, required=True, help='Path to the output file');
+parser.add_argument('--verbose', type=bool, default=False, help='Enable verbose output');
+args = parser.parse_args();
 
-""" if os.path.exists(file_path):
-    print(f"The file '{file_path}' exists.")
-else:
-    print(f"The file '{file_path}' does not exist.") """
+input_path:str = args.infile;
+output_path:str = args.outfile;
+verbose:bool = args.verbose;
 
+print(f"Verbose mode is {'on' if verbose else 'off'}");
+if verbose:
+    print(f"Current working directory: {dir}");
+    print(f"Input file path: {input_path}");
+    print(f"Output file path: {output_path}");
 
-#ssl._create_default_https_context = ssl._create_stdlib_context - needed this the first time I ran this code, but not needed now
+### Check if input_path is a path to a shareable video from GDrive
+if input_path.startswith("https://drive.google.com/"):
+    ### Download the video from GDrive to the local directory
+    if verbose:
+        print(f"Downloading video from GDrive to {dir}\\input.mp4");
+    gdown.download(input_path, "input.mp4", quiet=not verbose, fuzzy=True, verify=False);
+    input_path = os.path.join(dir, "input.mp4");
+
+    ### If download fails
+    if not os.path.exists(input_path):
+        print(f"Failed to download video file from GDrive.");
+        exit(1);
+
+### Best to do this at all times
+ssl._create_default_https_context = ssl._create_stdlib_context;
 
 ### Parse the video file and transcribe it using Whisper
 model = whisper.load_model("base")  # or "medium", "large"
-result = model.transcribe(file_path, verbose=True)
+result = model.transcribe(input_path, verbose=verbose)
 
 ### Get the full text transcription
 full_text = result["text"];
@@ -117,9 +147,10 @@ document.add_paragraph(summary);
 ### Add the Steps section
 document.add_heading("Steps", level=2)
 for segment in result["segments"]:
-    print(f"[{segment['start']:.2f} - {segment['end']:.2f}] {segment['text']}")
+    if verbose:
+        print(f"[{segment['start']:.2f} - {segment['end']:.2f}] {segment['text']}")
     # Extract a frame at the start of each segment
-    extract_frame_at_time(file_path, dir, segment['start']);
+    extract_frame_at_time(input_path, dir, segment['start'], verbose);
 
     #Add the text to the document
     document.add_paragraph(segment['text']) ;
@@ -129,8 +160,12 @@ for segment in result["segments"]:
 
 
 ### Close and save the document
-document.save("MyVideo.docx");
-
+document.save(output_path);
+### Clean up the temporary frame image
+os.remove(f"{dir}/frame.jpg");
+### Clean up the downloaded video file
+if input_path.startswith("https://drive.google.com/"):
+    os.remove(input_path);
 
 '''
 # Print segments with timestamps
