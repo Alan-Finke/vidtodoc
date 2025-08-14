@@ -107,7 +107,7 @@ if input_path.startswith("https://drive.google.com/"):
         exit(1);
 
     ### If download fails
-    if not os.path.exists(input_path):
+    if not os.path.exists(output_dir):
         print(f"Failed to download video file from GDrive.");
         exit(1);
 
@@ -173,7 +173,7 @@ document.save(output_path);
 ### Clean up the temporary frame image
 os.remove(f"{dir}/frame.jpg");
 ### Clean up the downloaded video file
-if input_path.startswith("https://drive.google.com/"):
+if os.path.exists(input_path) and input_path.endswith("input.mp4"):
     os.remove(input_path);
 
 '''
