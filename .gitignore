@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+.env/
+
+# VS Code settings
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs and temp files
+*.log
+*.tmp
+
+# Output files
+*.docx
+*.jpg
+*.png
+*.mp4
+*.jpg
+
+# Environment variables
+.env
+
+# gdown cache
+.gdown/
+
+# Whisper model cache
+.whisper/
