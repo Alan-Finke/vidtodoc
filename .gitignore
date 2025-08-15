@@ -25,10 +25,16 @@ Thumbs.db
 
 # Output files
 *.docx
+*.html
+*.pdf
 *.jpg
 *.png
 *.mp4
-*.jpg
+
+# Ignore all .md files
+*.md
+# But do not ignore README.md
+!README.md
 
 # Environment variables
 .env
