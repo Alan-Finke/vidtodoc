@@ -10,4 +10,4 @@ You also need to install the following Python packages (make sure you're at the 
 ```bash
 pip install -r requirements.txt
 ```
-Also, make sure you have LibreOffice installed and accessible in the system's PATH
+Also, make sure you have LibreOffice installed and accessible in the system's PATH for viewing docx files.
