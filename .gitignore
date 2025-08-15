@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+.env/
+
+# VS Code settings
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs and temp files
+*.log
+*.tmp
+
+# Output files
+*.docx
+*.html
+*.pdf
+*.jpg
+*.png
+*.mp4
+
+# Ignore all .md files
+*.md
+# But do not ignore README.md
+!README.md
+
+# Environment variables
+.env
+
+# gdown cache
+.gdown/
+
+# Whisper model cache
+.whisper/
