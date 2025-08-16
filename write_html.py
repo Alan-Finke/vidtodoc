@@ -108,17 +108,5 @@ def write_html_file(title, summary, vidfile, result):
     except IOError as e:
         print(f"An I/O error occurred: {e}")
 
-'''
-    # Add a title
-    document.add_heading('Video Summary Document', level=1)
 
-    # Add a paragraph
-    document.add_paragraph('This document contains the summary and steps extracted from the video.')
-
-    # Save the document as HTML
-    html_file_path = os.path.join(os.getcwd(), 'video_summary.html')
-    document.save(html_file_path)
-
-    print(f"Document saved as {html_file_path}")
-'''
 
