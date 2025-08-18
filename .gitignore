@@ -30,11 +30,14 @@ Thumbs.db
 *.jpg
 *.png
 *.mp4
-
-# Ignore all .md files
 *.md
-# But do not ignore README.md
+
+# Do not ignore README.md
 !README.md
+
+# Do not ignore template files
+!main_template.html
+!step_template.html
 
 # Environment variables
 .env

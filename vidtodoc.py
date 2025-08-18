@@ -1,57 +1,31 @@
 import argparse
-import shutil
-import cv2 
 import httpx
 import os
+import shutil
 import ssl
 import whisper
 import markdown_writer
-from docx_conversions import convert_docx_to_pdf_libreoffice, convert_docx_to_md, convert_docx_to_html
 from docx import Document 
+from docx_conversions import convert_docx_to_pdf_libreoffice
 from docx.shared import Inches
-from openai import AsyncOpenAI, DefaultAsyncHttpxClient , OpenAI
-
-def extract_frame_at_time(video_path, output_dir, frames_dir, time_in_seconds, counter, verbose):
-    """
-    Extracts a frame from a video at a specific timestamp.
-
-    Args:
-        video_path (str): Path to the input video file.
-        output_dir (str): Directory to save the extracted image.
-        time_in_seconds (float): The time in seconds at which to extract the frame.
-    """
-    vidcap = cv2.VideoCapture(video_path)
-
-    # Set the position in milliseconds
-    vidcap.set(cv2.CAP_PROP_POS_MSEC, time_in_seconds * 1000)
-
-    success, image = vidcap.read()
-
-    if success:
-        filename = f"{frames_dir}/frame_{counter}.jpg"
-        cv2.imwrite(filename, image)
-        if verbose:
-            print(f"Frame extracted and saved to: {filename}")
-    else:
-        print(f"Could not extract frame at {time_in_seconds} seconds.")
-
-    vidcap.release()
+from extract_frame import extract_frame_at_time
+from html_writer import HTMLWriter
+from openai import OpenAI
 
 def perform_cleanup():
     """
     Perform any necessary cleanup actions after processing.
     """
-    ### Clean up the temporary frame directory
-    if output_format == "docx" or output_format == "pdf":
-        head_tail = os.path.split(frames_path)
-        if os.path.exists(head_tail[0]):
-            shutil.rmtree(head_tail[0])
-
     ### Clean up the output.docx file
-    if os.path.exists(output_file):
-        os.remove(output_file)
-    
+    if output_format == "docx" or output_format == "pdf":
+        if os.path.exists(output_file):
+            os.remove(output_file)
+        ### Clean up the temporary frame.jpg file
+        if os.path.exists(frame_file):
+            os.remove(frame_file)
+
     ### Clean up the pycache dir
+    output_dir = os.path.dirname(output_path)
     pycache_dir = os.path.join(output_dir, "__pycache__")
     if os.path.exists(pycache_dir):
         shutil.rmtree(pycache_dir);
@@ -136,81 +110,109 @@ response =  client.chat.completions.create(model='azure-gpt-4o', messages = [
 
 summary = response.choices[0].message.content 
 
+if verbose:
+    print(f"\nWriting {output_format.upper()} file...")
+
 ### Create the docx document
-document = Document();
-document.add_heading(title, level=1)
-document.add_heading("Summary", level=2)
-document.add_paragraph(summary);
+if output_format == "docx" or output_format == "pdf":
+    document = Document();
+    document.add_heading(title, level=1)
+    document.add_heading("Summary", level=2)
+    document.add_paragraph(summary);
+
+### Create the HTML document
+if output_format == "html":
+    html_document = HTMLWriter(dir)
+    html_document.add_title(title)
+    html_document.add_summary(summary)
 
 ### If specified, create the Markdown document
 if output_format == "md":
-    md_document = markdown_writer.MarkdownWriter(output_path)
+    md_document = markdown_writer.MarkdownWriter()
     md_document.add_heading(title, level=1)
     md_document.add_heading("Summary", level=2)
     md_document.add_paragraph(summary)
 
-### We will create the frames directory, regardless of the specified file format
-base_name = os.path.basename(output_path)
-base_path = os.path.dirname(output_path)
-root_frames_dir = f"{base_name.split('.')[0]}_{base_name.split('.')[1]}"
-frames_path = os.path.join(base_path, root_frames_dir, "frames")
-
-### Remove previously-used frames directory
-if os.path.exists(frames_path):
-    shutil.rmtree(frames_path)
-
 ### Create the frames directory
-os.makedirs(frames_path, exist_ok=True)
+if output_format == "docx" or output_format == "pdf":
+    frames_path = os.path.dirname(output_path)
+
+elif output_format == "md" or output_format == "html":
+    base_name = os.path.basename(output_path)
+    base_path = os.path.dirname(output_path)
+    root_frames_dir = f"{base_name.split('.')[0]}_{base_name.split('.')[1]}"
+    frames_path = os.path.join(base_path, root_frames_dir, "frames")
+    ### Remove frames directory if it exists
+    if os.path.exists(frames_path):
+        shutil.rmtree(frames_path)
+    os.makedirs(frames_path, exist_ok=True)
 
 ### Add the Steps section
-document.add_heading("Steps", level=2)
-if output_format == "md":
+if output_format == "docx" or output_format == "pdf":
+    document.add_heading("Steps", level=2)
+elif output_format == "md":
     md_document.add_heading("Steps", level=2)
 
 counter = 1
 for segment in result["segments"]:
     if verbose:
         print(f"[{segment['start']:.2f} - {segment['end']:.2f}] {segment['text']}")
-    # Extract a frame at the start of each segment
-    extract_frame_at_time(input_path, dir, frames_path, segment['start'], counter, verbose)
+    try:
+        # Extract a frame at the start of each segment
+        extract_frame_at_time(input_path, frames_path, segment['start'], output_format, counter, verbose)
 
-    ### Add the text to the document
-    document.add_paragraph(segment['text']);
-    if output_format == "md":
-        md_document.add_paragraph(segment['text']);
+        if output_format == "docx" or output_format == "pdf":
+            ### Add the text to the document
+            document.add_paragraph(segment['text']);
+            ### Add the frame to the document
+            frame_file = os.path.join(frames_path, 'frame.jpg')
+            document.add_picture(frame_file, width=Inches(5.00));  # Requires 'docx.shared.Inches'
+        
+        elif output_format == "md":
+            ### Add the text to the Markdown document
+            md_document.add_paragraph(segment['text']);
+            ### Add the frame to the Markdown document
+            frame_file = os.path.join(frames_path, f'frame_{counter}.jpg')
+            md_document.add_image(frame_file, width=Inches(5.00), alt_text=f"Image {counter}");
+        
+        elif output_format == "html":
+            frame_file = os.path.join(frames_path, f'frame_{counter}.jpg')
+            ### Add the step to the HTML document
+            html_document.add_step(counter, segment['text'], frame_file, alt_text=f"Image {counter}");
 
-    ### Add the frame to the document
-    document.add_picture(f"{frames_path}\\frame_{counter}.jpg", width=Inches(5.00));  # Requires 'docx.shared.Inches'
-    if output_format == "md":
-        md_document.add_image(f"{frames_path}\\frame_{counter}.jpg", width=Inches(5.00), alt_text=f"Image {counter}");
+        if verbose:
+            print(f"Added frame: {frame_file} to {output_format.upper()} document, step {counter}.\n")
+        counter += 1
+    except Exception as e:
+        print(f"Error occurred while processing segment {counter}:\n{e}\n")
 
-    if verbose:
-        print(f"Added frame: {frames_path}\\frame_{counter}.jpg")
-    
-    counter += 1
+if output_format == "docx" or output_format == "pdf":
+    ### Get the path without filename
+    output_dir = os.path.dirname(output_path)
+    output_file = os.path.join(output_dir, "output.docx")
+    ### Save the output document
+    document.save(output_file);
 
-### Get the path without filename
-output_dir = os.path.dirname(output_path)
-output_file = os.path.join(output_dir, "output.docx")
-
-### Save the output document
-document.save(output_file);
-
-### If specified, save the Markdown document
-if output_format == "md":
+elif output_format == "md":
     ### If the md document already exists
     if os.path.exists(output_path):
         os.remove(output_path)
-    md_document.save();
+    ### Save the Markdown document
+    md_document.save(output_path);
+
+elif output_format == "html":
+    ### If the html document already exists
+    if os.path.exists(output_path):
+        os.remove(output_path)
+    ### Save the HTML document
+    html_document.save(output_path);
 
 ### Check the format selected in output_format and perform conversion if needed
 try:
     if output_format == "pdf":
         ### Convert the document to PDF
         convert_docx_to_pdf_libreoffice(output_file, output_path, verbose=verbose)
-    elif output_format == "html":
-        ### Convert the document to HTML
-        convert_docx_to_html(output_file, output_path)
+    
     elif output_format == "docx":
         ### If the output document already exists
         if os.path.exists(output_path):

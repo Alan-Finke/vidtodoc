@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Software Configuration Manual</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Use the Inter font family */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <!-- Main Container -->
+    <div class="container mx-auto max-w-4xl px-4 py-8 sm:py-12">
+        <!-- Header Section -->
+        <header class="text-center mb-10">
+            <h1 class="text-4xl sm:text-5xl font-bold text-gray-900">{{TITLE}}</h1>
+            <!--<p class="mt-2 text-lg text-gray-600">Your one-stop guide to setting up 'Awesome App'</p>-->
+        </header>
+        
+        <!-- Summary Section -->
+        <section id="summary" class="bg-white p-6 sm:p-8 rounded-xl shadow-md mb-12">
+            <h2 class="text-2xl font-bold text-gray-900 border-b-2 border-blue-500 pb-2 mb-4">Summary</h2>
+            <p class="text-gray-700 leading-relaxed">{{SUMMARY}}</p>
+        </section>
+        
+        <!-- Step-by-Step Instructions Section -->
+        <section id="instructions">
+            <h2 class="text-3xl font-bold text-gray-900 text-center mb-8">Step-by-Step Instructions</h2>
+        </section>
+        
+        <!-- Steps List -->
+        {{STEPS}}
+
+        <!-- Footer Section -->
+        <footer class="text-center mt-12 pt-6 border-t border-gray-300">
+            <p class="text-gray-600">&copy; 2025 Wex,  Inc. All rights reserved.</p>
+        </footer>
+    </div>
+</body>
+</html>
