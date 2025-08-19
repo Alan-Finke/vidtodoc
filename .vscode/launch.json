@@ -8,7 +8,9 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "args": [
-                "--help"
+                "--infile", "ReclaimDemo.mp4",
+                "--outfile", "ReclaimDemo.docx",
+                "--verbose", "true"
             ]
         }
     ]
