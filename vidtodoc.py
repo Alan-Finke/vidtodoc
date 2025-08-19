@@ -58,13 +58,13 @@ else:
     exit(1)
 
 ### Define constants
-current_dir = os.getcwd();
-apikey = os.getenv('OPEN_API_KEY')
+CURRENT_DIR = os.getcwd();
+API_KEY = os.getenv('OPEN_API_KEY')
 BASE_URL = "https://aips-ai-gateway.ue1.dev.ai-platform.int.wexfabric.com/"
 
 print(f"Verbose mode is {'on' if verbose else 'off'}");
 if verbose:
-    print(f"Current working directory: {current_dir}");
+    print(f"Current working directory: {CURRENT_DIR}");
     print(f"Input file path: {input_path}");
     print(f"Output file path: {output_path}");
 
@@ -81,7 +81,7 @@ full_text = result["text"];
 ### Initialize OpenAI client
 client = OpenAI(
     base_url=BASE_URL,
-    api_key=apikey,
+    api_key=API_KEY,
     http_client = httpx.Client(verify=False)
 )
 
@@ -123,7 +123,7 @@ if output_format == "docx" or output_format == "pdf":
 
 ### Create the HTML document
 if output_format == "html":
-    html_document = HTMLWriter(current_dir)
+    html_document = HTMLWriter(CURRENT_DIR)
     html_document.add_title(title)
     html_document.add_summary(summary)
 
