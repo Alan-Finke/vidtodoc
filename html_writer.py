@@ -12,12 +12,15 @@ class HTMLWriter:
         self.steps_html = []
 
     def add_title(self, title):
+        """Add a title to the document."""
         self.title = title
 
     def add_summary(self, summary):
+        """Add a summary to the document."""
         self.summary = summary
 
     def add_step(self, step, text, image_path=None, alt_text="Image"):
+        """Add a step to the document."""
         # Read the step template
         template_path = os.path.join(self.templates_path, "step_template.html")
         with open(template_path, "r", encoding="utf-8") as f:
@@ -33,6 +36,7 @@ class HTMLWriter:
         self.steps_html.append(step_html)
 
     def save(self, output_path):
+        """Save the document to a file."""
         # Read the main template
         template_path = os.path.join(self.templates_path, "main_template.html")
         with open(template_path, "r", encoding="utf-8") as f:
