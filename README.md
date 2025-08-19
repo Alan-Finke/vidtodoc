@@ -2,7 +2,6 @@
 <br/>
 
 ***Note:  This application uses OpenAI Whisper which is not sanctioned by Wex, so don't use proprietary data.***
-
 <br/>
 
 ## Prerequisites
