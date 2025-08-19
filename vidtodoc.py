@@ -4,12 +4,12 @@ import os
 import shutil
 import ssl
 import whisper
-import markdown_writer
 from docx import Document 
 from docx_conversions import convert_docx_to_pdf_libreoffice
 from docx.shared import Inches
 from extract_frame import extract_frame_at_time
 from html_writer import HTMLWriter
+from markdown_writer import MarkdownWriter
 from openai import OpenAI
 
 def perform_cleanup():
@@ -31,7 +31,7 @@ def perform_cleanup():
         shutil.rmtree(pycache_dir);
 
 ### Initialize OpenAI client
-dir = os.getcwd();
+current_dir = os.getcwd();
 apikey = os.getenv('OPEN_API_KEY')
 BASE_URL = "https://aips-ai-gateway.ue1.dev.ai-platform.int.wexfabric.com/"
 
@@ -70,7 +70,7 @@ else:
 
 print(f"Verbose mode is {'on' if verbose else 'off'}");
 if verbose:
-    print(f"Current working directory: {dir}");
+    print(f"Current working directory: {current_dir}");
     print(f"Input file path: {input_path}");
     print(f"Output file path: {output_path}");
 
@@ -122,13 +122,13 @@ if output_format == "docx" or output_format == "pdf":
 
 ### Create the HTML document
 if output_format == "html":
-    html_document = HTMLWriter(dir)
+    html_document = HTMLWriter(current_dir)
     html_document.add_title(title)
     html_document.add_summary(summary)
 
 ### If specified, create the Markdown document
 if output_format == "md":
-    md_document = markdown_writer.MarkdownWriter()
+    md_document = MarkdownWriter()
     md_document.add_heading(title, level=1)
     md_document.add_heading("Summary", level=2)
     md_document.add_paragraph(summary)
