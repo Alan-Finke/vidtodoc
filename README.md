@@ -6,6 +6,8 @@ This uses OpenAI Whisper which is not sanctioned by Wex, so don't use proprietar
 You must install [FFmpeg](https://ffmpeg.org/download.html) to extract audio from video files.  
 After downloading and extracting the file, make sure `ffmpeg\bin` folder is available in your system PATH.
 
+If you are creating PDF files, you will need to install [Libre Office](https://www.libreoffice.org/download/download-libreoffice/)
+
 You also need to install the following Python packages (make sure you're at the root of this project's folder):
 ```bash
 pip install -r requirements.txt
