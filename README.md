@@ -11,3 +11,8 @@ You also need to install the following Python packages (make sure you're at the 
 pip install -r requirements.txt
 ```
 Also, make sure you have LibreOffice installed and accessible in the system's PATH for viewing docx files.
+
+```bash
+usage: vidtodoc.py [-h] --infile INFILE --outfile OUTFILE
+                   [--verbose VERBOSE]
+```
