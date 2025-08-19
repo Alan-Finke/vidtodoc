@@ -30,17 +30,6 @@ def perform_cleanup():
     if os.path.exists(pycache_dir):
         shutil.rmtree(pycache_dir);
 
-### Initialize OpenAI client
-current_dir = os.getcwd();
-apikey = os.getenv('OPEN_API_KEY')
-BASE_URL = "https://aips-ai-gateway.ue1.dev.ai-platform.int.wexfabric.com/"
-
-client = OpenAI(
-    base_url=BASE_URL,
-    api_key=apikey,
-    http_client = httpx.Client(verify=False)
-)
-
 ### Get --infile and --outfile arguments from command line
 parser = ArgumentParser();
 parser.add_argument('--infile', type=str, required=True, help='Path to the input video file');
@@ -68,6 +57,11 @@ else:
     print("Supported formats are: pdf, md, html, docx.\n");
     exit(1)
 
+### Define constants
+current_dir = os.getcwd();
+apikey = os.getenv('OPEN_API_KEY')
+BASE_URL = "https://aips-ai-gateway.ue1.dev.ai-platform.int.wexfabric.com/"
+
 print(f"Verbose mode is {'on' if verbose else 'off'}");
 if verbose:
     print(f"Current working directory: {current_dir}");
@@ -83,6 +77,13 @@ result = model.transcribe(input_path, verbose=verbose)
 
 ### Get the full text transcription
 full_text = result["text"];
+
+### Initialize OpenAI client
+client = OpenAI(
+    base_url=BASE_URL,
+    api_key=apikey,
+    http_client = httpx.Client(verify=False)
+)
 
 ### Create the title for the document 
 response =  client.chat.completions.create(model='azure-gpt-4o', messages = [
