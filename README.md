@@ -1,6 +1,6 @@
 # vidtodoc - Converts videos to Word Documents
 
-This uses OpenAI Whisper which is not sanctioned by Wex, so don't use proprietary data.  
+** Note:  This uses OpenAI Whisper which is not sanctioned by Wex, so don't use proprietary data. **
 <br/><br/>
 ## Prerequisites
 You must install [FFmpeg](https://ffmpeg.org/download.html) to extract audio from video files.  
@@ -18,3 +18,7 @@ Also, make sure you have LibreOffice installed and accessible in the system's PA
 usage: vidtodoc.py [-h] --infile INFILE --outfile OUTFILE
                    [--verbose VERBOSE]
 ```
+## Possible Future Enhancements
+1. Read and Write to/from Google drive.  To do this an API key is needed and wasn't available at the time.
+2. Read and Write to/from Jira and Confluence.  To do this an API key is needed and wasn't available at the time.
+3. Highlight areas of the extracted image that were described in the video.
