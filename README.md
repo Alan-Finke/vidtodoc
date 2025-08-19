@@ -1,8 +1,9 @@
 # vidtodoc - Converts Videos to Documents
-<p>
+<br/><br/>
+
 ***Note:  This uses OpenAI Whisper which is not sanctioned by Wex, so don't use proprietary data.***
-</p>
-<br/>
+
+<br/><br/>
 ## Prerequisites
 You must install [FFmpeg](https://ffmpeg.org/download.html) to extract audio from video files.  
 After downloading and extracting the file, make sure `ffmpeg\bin` folder is available in your system PATH.
