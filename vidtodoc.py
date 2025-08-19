@@ -69,6 +69,7 @@ if verbose:
     print(f"Output file path: {output_path}");
 
 ### Best to do this at all times
+### (especially when using self-signed certs)
 ssl._create_default_https_context = ssl._create_stdlib_context;
 
 ### Parse the video file and transcribe it using Whisper
