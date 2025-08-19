@@ -1,9 +1,9 @@
-import argparse
 import httpx
 import os
 import shutil
 import ssl
 import whisper
+from argparse import ArgumentParser
 from docx import Document 
 from docx_conversions import convert_docx_to_pdf_libreoffice
 from docx.shared import Inches
@@ -42,7 +42,7 @@ client = OpenAI(
 )
 
 ### Get --infile and --outfile arguments from command line
-parser = argparse.ArgumentParser();
+parser = ArgumentParser();
 parser.add_argument('--infile', type=str, required=True, help='Path to the input video file');
 parser.add_argument('--outfile', type=str, required=True, help='Path to the output file');
 parser.add_argument('--verbose', type=bool, default=False, help='Enable verbose output');
