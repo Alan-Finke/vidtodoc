@@ -1,6 +1,6 @@
-# vidtodoc - Converts videos to Word Documents
+# vidtodoc - Converts Videos to Documents
 
-**Note:  This uses OpenAI Whisper which is not sanctioned by Wex, so don't use proprietary data.**
+***Note:  This uses OpenAI Whisper which is not sanctioned by Wex, so don't use proprietary data.***
 <br/><br/>
 ## Prerequisites
 You must install [FFmpeg](https://ffmpeg.org/download.html) to extract audio from video files.  
