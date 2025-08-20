@@ -40,8 +40,7 @@ def main():
     OUTPUT_FORMAT = get_output_format(args.outfile)
     TEMPLATES_PATH = os.path.join(os.getcwd(), "templates")
     API_KEY = os.getenv('OPEN_API_KEY')
-    BASE_URL = "https://aips-ai-gateway.ue1.dev.ai-platform.int.wexfabric.com/"
-
+    
     # Transcribe video
     result = transcribe_video(args.infile, args.verbose)
     full_text = result["text"]
