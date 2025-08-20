@@ -3,6 +3,7 @@ import os
 import ssl
 from Handlers.output_handlers import get_output_handler
 from Utilities.helpers import (
+    load_config,
     parse_args,
     setup_logging,
     get_output_format,
@@ -31,6 +32,10 @@ def main():
     # Create SSL context
     ssl._create_default_https_context = ssl._create_stdlib_context
 
+    # Load config
+    config = load_config()
+    BASE_URL = config.get("base_url")
+    
     # Set up constants
     OUTPUT_FORMAT = get_output_format(args.outfile)
     TEMPLATES_PATH = os.path.join(os.getcwd(), "templates")

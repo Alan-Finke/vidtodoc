@@ -1,3 +1,4 @@
+import json
 import httpx
 import logging
 import os
@@ -8,6 +9,10 @@ from docx.shared import Inches
 from openai import OpenAI
 from Utilities.extract_frame import extract_frame_at_time
 
+def load_config(config_path="config.json"):
+    with open(config_path, "r") as f:
+        return json.load(f)
+    
 def setup_logging(verbose: bool):
     """Sets up logging configuration based on verbosity level."""
     level = logging.DEBUG if verbose else logging.INFO
