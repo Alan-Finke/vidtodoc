@@ -65,7 +65,12 @@ def transcribe_video(input_path: str, verbose: bool):
     Transcribes the audio from the video file.
     """
     model = whisper.load_model("base")
-    return model.transcribe(input_path, verbose=verbose)
+    return model.transcribe(
+        input_path, 
+        verbose=verbose,
+        word_timestamps=True,
+        hallucination_silence_threshold=0.5  # Skip silent periods longer than 0.5 seconds if hallucination is suspected
+    )
 
 def get_openai_client(api_key: str, base_url: str):
     """
