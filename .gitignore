@@ -17,7 +17,6 @@ ENV/
 
 # Build directories
 build/
-dist/
 
 # OS files
 .DS_Store
