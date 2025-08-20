@@ -6,8 +6,7 @@ def extract_frame_at_time(
     video_path: str,
     frames_dir: str,
     time_in_seconds: float,
-    counter: int,
-    verbose: bool
+    counter: int
 ) -> str:
     """
     Extracts a frame from a video at a specific timestamp.
@@ -18,7 +17,6 @@ def extract_frame_at_time(
         time_in_seconds (float): The time in seconds at which to extract the frame.
         output_format (str): The output format of the document.
         counter (int): The current segment counter.
-        verbose (bool): Whether to print verbose output.
 
     Returns:
         str: The path to the saved frame image.
@@ -37,8 +35,7 @@ def extract_frame_at_time(
         filename = os.path.join(frames_dir, f'frame_{counter}.jpg')
         # Save the extracted frame
         cv2.imwrite(filename, image)
-        if verbose:
-            logging.info(f"Frame extracted and saved to: {filename}")
+        logging.debug(f"Frame extracted and saved to: {filename}")
         return filename
     else:
         raise ValueError(f"Could not extract frame at {time_in_seconds} seconds from {video_path}.")

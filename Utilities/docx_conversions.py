@@ -2,7 +2,7 @@ import subprocess
 import logging
 import os
 
-def convert_docx_to_pdf_libreoffice(docx_path: str, pdf_path: str, verbose: bool = False) -> None:
+def convert_docx_to_pdf_libreoffice(docx_path: str, pdf_path: str) -> None:
     """
     Converts a DOCX file to PDF using LibreOffice.
 
@@ -28,8 +28,7 @@ def convert_docx_to_pdf_libreoffice(docx_path: str, pdf_path: str, verbose: bool
         generated_pdf = os.path.join(output_dir, os.path.splitext(os.path.basename(docx_path))[0] + ".pdf")
         if generated_pdf != pdf_path:
             os.replace(generated_pdf, pdf_path)
-        if verbose:
-            logging.info(f"Converted {docx_path} to {pdf_path} using LibreOffice.")
+        logging.debug(f"Converted {docx_path} to {pdf_path} using LibreOffice.")
     except Exception as e:
         raise RuntimeError(f"LibreOffice conversion failed: {e}")
     except FileNotFoundError:

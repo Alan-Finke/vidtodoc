@@ -2,7 +2,7 @@ import logging
 import os
 import ssl
 from Handlers.output_handlers import get_output_handler
-from Utilities.helpers import (
+from Helpers.helpers import (
     load_config,
     parse_args,
     setup_logging,
@@ -37,10 +37,14 @@ def main():
     BASE_URL = config.get("base_url")
     
     # Set up constants
-    OUTPUT_FORMAT = get_output_format(args.outfile)
     TEMPLATES_PATH = os.path.join(os.getcwd(), "templates")
     API_KEY = os.getenv('OPEN_API_KEY')
-    
+    try:
+        OUTPUT_FORMAT = get_output_format(args.outfile)
+    except ValueError as e:
+        logging.error(e)
+        exit(1)
+            
     # Transcribe video
     result = transcribe_video(args.infile, args.verbose)
     full_text = result["text"]
@@ -61,7 +65,11 @@ def main():
     output_handler.add_steps_heading()
 
     # Process video segments
-    process_segments(result, args.infile, frames_path, output_handler, OUTPUT_FORMAT, args.verbose)
+    try:
+        process_segments(result, args.infile, frames_path, output_handler, OUTPUT_FORMAT, args.verbose)
+    except ValueError as e:
+        logging.error(e)
+        exit(1)
 
     output_handler.save(args.outfile)
     output_handler.postprocess(args.outfile)

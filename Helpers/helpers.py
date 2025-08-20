@@ -10,6 +10,7 @@ from openai import OpenAI
 from Utilities.extract_frame import extract_frame_at_time
 
 def load_config(config_path="config.json"):
+    """Loads the configuration from a JSON file."""
     with open(config_path, "r") as f:
         return json.load(f)
     
@@ -45,8 +46,7 @@ def get_output_format(output_path: str) -> str:
     formats = {'pdf', 'md', 'html', 'docx', 'doc'}
     if ext in formats:
         return ext
-    logging.error(f"Unsupported output file format: {ext.upper()}.\nSupported formats: {', '.join(formats)}\n")
-    exit(1)
+    raise ValueError(f"Unsupported output file format: {ext.upper()}.\nSupported formats: {', '.join(formats)}\n")
 
 def prepare_frames_dir(output_path: str) -> str:
     """Prepares the frames directory for extracted video frames."""
@@ -108,8 +108,8 @@ def process_segments(result, input_path, frames_path, output_handler, output_for
         logging.debug(f"[{segment['start']:.2f} - {segment['end']:.2f}] {segment['text']}")
         try:
             frame_file = os.path.join(frames_path, f'frame_{counter}.jpg')
-            extract_frame_at_time(input_path, frames_path, segment['start'], counter, verbose)
+            extract_frame_at_time(input_path, frames_path, segment['start'], counter)
             output_handler.add_step(segment['text'], frame_file, counter, Inches(5.00))
             counter += 1
         except Exception as e:
-            logging.error(f"Error occurred while processing segment {counter}: {e}")
+            raise ValueError(f"Error occurred while processing segment {counter}: {e}")
