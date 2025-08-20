@@ -1,7 +1,14 @@
 import os
 import cv2
+import logging
 
-def extract_frame_at_time(video_path, frames_dir, time_in_seconds, output_format, counter, verbose):
+def extract_frame_at_time(
+    video_path: str,
+    frames_dir: str,
+    time_in_seconds: float,
+    counter: int,
+    verbose: bool
+) -> str:
     """
     Extracts a frame from a video at a specific timestamp.
 
@@ -12,25 +19,28 @@ def extract_frame_at_time(video_path, frames_dir, time_in_seconds, output_format
         output_format (str): The output format of the document.
         counter (int): The current segment counter.
         verbose (bool): Whether to print verbose output.
-    """
-    # Initialize video capture
-    vidcap = cv2.VideoCapture(video_path)
 
-    # Set the position in milliseconds
+    Returns:
+        str: The path to the saved frame image.
+
+    Raises:
+        ValueError: If the frame could not be extracted.
+    """
+    # Create a VideoCapture object and set the position to the desired time
+    vidcap = cv2.VideoCapture(video_path)
     vidcap.set(cv2.CAP_PROP_POS_MSEC, time_in_seconds * 1000)
 
     # Read the frame
     success, image = vidcap.read()
 
-    # Check if the frame was successfully extracted
     if success:
-        filename = f"{os.path.join(frames_dir, f'frame_{counter}.jpg')}"
+        filename = os.path.join(frames_dir, f'frame_{counter}.jpg')
         # Save the extracted frame
         cv2.imwrite(filename, image)
         if verbose:
-            print(f"Frame extracted and saved to: {filename}")
+            logging.info(f"Frame extracted and saved to: {filename}")
+        return filename
     else:
-        raise ValueError(f"Could not extract frame at {time_in_seconds} seconds.")
+        raise ValueError(f"Could not extract frame at {time_in_seconds} seconds from {video_path}.")
 
-    # Release the video capture object
     vidcap.release()

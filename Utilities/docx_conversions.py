@@ -1,43 +1,38 @@
-import os
 import subprocess
+import logging
+import os
 
-def convert_docx_to_pdf_libreoffice(input_docx_path: str, output_pdf_path: str, verbose: bool = False):
+def convert_docx_to_pdf_libreoffice(docx_path: str, pdf_path: str, verbose: bool = False) -> None:
     """
-    Converts a DOCX file to PDF using LibreOffice in headless mode.
-    Requires LibreOffice to be installed and accessible in the system's PATH.
+    Converts a DOCX file to PDF using LibreOffice.
+
+    Args:
+        docx_path (str): Path to the DOCX file.
+        pdf_path (str): Desired output PDF file path.
+
+    Raises:
+        RuntimeError: If conversion fails.
     """
     try:
-        # Ensure the output directory exists
-        output_dir = os.path.dirname(output_pdf_path)
-        if output_dir and not os.path.exists(output_dir):
-            os.makedirs(output_dir)
-
-        # Construct the LibreOffice command
-        command = [
-            "soffice",  # Command for LibreOffice
+        # LibreOffice outputs to the directory, so get the directory and filename
+        output_dir = os.path.dirname(pdf_path)
+        cmd = [
+            "soffice",
             "--headless",
             "--convert-to", "pdf",
-            "--outdir", os.path.dirname(output_pdf_path) or ".", # Output directory
-            input_docx_path
+            "--outdir", output_dir,
+            docx_path
         ]
-        
-        # Execute the command
-        subprocess.run(command, check=True)
-
-        # LibreOffice names the output file based on the filename in the --outdir
-        # We need to rename it if a specific output_pdf_path was provided
-        base_filename = os.path.basename(input_docx_path)
-        output_filename_libreoffice = os.path.join(
-            os.path.dirname(output_pdf_path) or ".", 
-            os.path.splitext(base_filename)[0] + ".pdf"
-        )
-
-        # Rename the output file if necessary
-        if output_filename_libreoffice != output_pdf_path:
-            os.rename(output_filename_libreoffice, output_pdf_path)
-    except subprocess.CalledProcessError as e:
-        raise Exception(f"Error during conversion to PDF:\n{e}")
-    except FileNotFoundError:
-        raise Exception("SOffice command not found. Ensure LibreOffice is installed and in your PATH.")
+        result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+        # Move the generated PDF to the desired path if needed
+        generated_pdf = os.path.join(output_dir, os.path.splitext(os.path.basename(docx_path))[0] + ".pdf")
+        if generated_pdf != pdf_path:
+            os.replace(generated_pdf, pdf_path)
+        if verbose:
+            logging.info(f"Converted {docx_path} to {pdf_path} using LibreOffice.")
     except Exception as e:
-        raise Exception(f"An unexpected error occurred during conversion to PDF:\n{e}")
+        raise RuntimeError(f"LibreOffice conversion failed: {e}")
+    except FileNotFoundError:
+        raise FileNotFoundError("SOffice command not found. Ensure LibreOffice is installed and in your PATH.")
+    except Exception as e:
+        raise RuntimeError(f"An unexpected error occurred during conversion to PDF:\n{e}")
