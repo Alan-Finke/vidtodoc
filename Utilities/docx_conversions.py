@@ -24,7 +24,7 @@ def convert_docx_to_pdf_libreoffice(input_docx_path: str, output_pdf_path: str, 
         # Execute the command
         subprocess.run(command, check=True)
 
-        # LibreOffice names the output file based on the input filename in the --outdir
+        # LibreOffice names the output file based on the filename in the --outdir
         # We need to rename it if a specific output_pdf_path was provided
         base_filename = os.path.basename(input_docx_path)
         output_filename_libreoffice = os.path.join(
@@ -34,9 +34,6 @@ def convert_docx_to_pdf_libreoffice(input_docx_path: str, output_pdf_path: str, 
 
         # Rename the output file if necessary
         if output_filename_libreoffice != output_pdf_path:
-            # Remove the existing output file if it exists
-            if os.path.exists(output_pdf_path):
-                os.remove(output_pdf_path)
             os.rename(output_filename_libreoffice, output_pdf_path)
     except subprocess.CalledProcessError as e:
         raise Exception(f"Error during conversion to PDF:\n{e}")
