@@ -21,7 +21,6 @@ def main():
     
     # Parse command-line arguments
     try:
-        setup_logging()
         args = parse_args()
     except Exception as e:
         logging.error(e)
