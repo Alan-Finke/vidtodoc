@@ -20,8 +20,13 @@ def main():
     """
     
     # Parse command-line arguments
-    args = parse_args()
-    
+    try:
+        setup_logging()
+        args = parse_args()
+    except Exception as e:
+        logging.error(e)
+        exit(1)
+
     setup_logging(args.verbose)
     
     logging.info(f"Verbose mode is {'on' if args.verbose else 'off'}")
@@ -66,7 +71,7 @@ def main():
 
     # Process video segments
     try:
-        process_segments(result, args.infile, frames_path, output_handler, OUTPUT_FORMAT, args.verbose)
+        process_segments(result, args.infile, frames_path, output_handler)
     except ValueError as e:
         logging.error(e)
         exit(1)

@@ -38,7 +38,13 @@ def parse_args():
     parser.add_argument('--infile', type=str, required=True, help='Path to the input video file')
     parser.add_argument('--outfile', type=str, required=True, help='Path to the output file')
     parser.add_argument('--verbose', type=bool, default=False, help='Enable verbose output')
-    return parser.parse_args()
+
+    # Check if the input file exists
+    args = parser.parse_args()
+    if not os.path.exists(args.infile):
+        raise FileNotFoundError(f"Input file '{args.infile}' does not exist.")
+
+    return args
 
 def get_output_format(output_path: str) -> str:
     """Determines the output format based on the file extension."""
@@ -99,7 +105,7 @@ def get_title_and_summary(client, full_text: str):
     summary = ask('create a summary for the following text: ')
     return title, summary
 
-def process_segments(result, input_path, frames_path, output_handler, output_format, verbose):
+def process_segments(result, input_path, frames_path, output_handler):
     """
     Processes the video segments and updates the output handler.
     """
