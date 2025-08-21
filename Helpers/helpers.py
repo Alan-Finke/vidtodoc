@@ -39,12 +39,7 @@ def parse_args():
     parser.add_argument('--outfile', type=str, required=True, help='Path to the output file')
     parser.add_argument('--verbose', type=bool, default=False, help='Enable verbose output')
 
-    # Check if the input file exists
-    args = parser.parse_args()
-    if not os.path.exists(args.infile):
-        raise FileNotFoundError(f"Input file '{args.infile}' does not exist.")
-
-    return args
+    return parser.parse_args()
 
 def get_output_format(output_path: str) -> str:
     """Determines the output format based on the file extension."""

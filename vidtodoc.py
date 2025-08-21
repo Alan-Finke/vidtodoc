@@ -20,11 +20,11 @@ def main():
     """
     
     # Parse command-line arguments
-    try:
-        setup_logging()
-        args = parse_args()
-    except Exception as e:
-        logging.error(e)
+    args = parse_args()
+
+    # Check if the input file exists
+    if not os.path.exists(args.infile):
+        logging.error(f"Input file '{args.infile}' does not exist.")
         exit(1)
 
     setup_logging(args.verbose)
